@@ -1,4 +1,5 @@
-﻿using AppAudit.Core.Models;
+﻿using AppAudit.Core.Helpers;
+using AppAudit.Core.Models;
 using AppAudit.Web.Abstractions;
 using System.Globalization;
 
@@ -16,7 +17,7 @@ internal sealed class CsvProgramsSource(IConfiguration cfg) : IProgramsSource
         string? line = sr.ReadLine();
         while ((line = sr.ReadLine()) is not null)
         {
-            var cols = SplitCsv(line);
+            var cols = CsvUtils.SplitLine(line);
             if (cols.Length < 17) continue;
             var e = new ProgramEntry(
                 ProgramId: cols[3],
@@ -38,7 +39,5 @@ internal sealed class CsvProgramsSource(IConfiguration cfg) : IProgramsSource
             list.Add(e);
         }
         return Task.FromResult<IReadOnlyList<ProgramEntry>>(list);
-
-        static string[] SplitCsv(string s) => s.Split(',');
     }
 }

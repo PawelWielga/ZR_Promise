@@ -1,4 +1,5 @@
 ﻿using AppAudit.Abstractions;
+using AppAudit.Core.Helpers;
 using AppAudit.Core.Models;
 using System.Text;
 
@@ -28,19 +29,24 @@ internal sealed class CsvResultWriter : IResultWriter
         foreach (var e in items)
         {
             writer.WriteLine(string.Join(',',
-                Q(ts), Q(scanId),
-                Q(machine), Q(e.ProgramId), Q(e.DisplayName), Q(e.DisplayVersion), Q(e.Publisher), Q(e.InstallDate),
-                Q(e.Architecture), Q(e.RegistryHive), Q(e.RegistryView), Q(e.SubkeyPath), Q(e.UninstallString),
-                Q(e.InstallLocation), Q(e.ProductCode), Q(e.InstallSource),
-                Q(e.EstimatedSize?.ToString(System.Globalization.CultureInfo.InvariantCulture)),
-                Q(e.DisplayLanguage)));
+                CsvUtils.Escape(ts), 
+                CsvUtils.Escape(scanId),
+                CsvUtils.Escape(machine), 
+                CsvUtils.Escape(e.ProgramId), 
+                CsvUtils.Escape(e.DisplayName), 
+                CsvUtils.Escape(e.DisplayVersion),
+                CsvUtils.Escape(e.Publisher), 
+                CsvUtils.Escape(e.InstallDate),
+                CsvUtils.Escape(e.Architecture), 
+                CsvUtils.Escape(e.RegistryHive), 
+                CsvUtils.Escape(e.RegistryView), 
+                CsvUtils.Escape(e.SubkeyPath), 
+                CsvUtils.Escape(e.UninstallString),
+                CsvUtils.Escape(e.InstallLocation), 
+                CsvUtils.Escape(e.ProductCode), 
+                CsvUtils.Escape(e.InstallSource),
+                CsvUtils.Escape(e.EstimatedSize?.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+                CsvUtils.Escape(e.DisplayLanguage)));
         }
-    }
-
-    private static string Q(string? s)
-    {
-        if (string.IsNullOrEmpty(s)) return string.Empty;
-        var need = s.IndexOfAny([',', '"', '\n', '\r']) >= 0;
-        return need ? "\"" + s.Replace("\"", "\"\"") + "\"" : s;
     }
 }
