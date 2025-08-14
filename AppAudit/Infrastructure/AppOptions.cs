@@ -1,4 +1,4 @@
-﻿namespace AppAudit.Core;
+﻿namespace AppAudit.Infrastructure;
 
 internal sealed class AppOptions
 {

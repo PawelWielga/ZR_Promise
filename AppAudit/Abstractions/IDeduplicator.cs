@@ -1,6 +1,6 @@
 ﻿using AppAudit.Core.Models;
 
-namespace AppAudit.Core.Abstractions;
+namespace AppAudit.Abstractions;
 
 public interface IDeduplicator
 {

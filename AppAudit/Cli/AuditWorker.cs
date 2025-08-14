@@ -1,4 +1,4 @@
-﻿using AppAudit.Core;
+﻿using AppAudit.Infrastructure;
 using Microsoft.Extensions.Hosting;
 using System.Runtime.Versioning;
 

@@ -1,4 +1,4 @@
-﻿namespace AppAudit.Core.Abstractions;
+﻿namespace AppAudit.Abstractions;
 
 using AppAudit.Core.Models;
 

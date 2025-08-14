@@ -1,5 +1,4 @@
-﻿using AppAudit.Core;
-using AppAudit.Core.Abstractions;
+﻿using AppAudit.Abstractions;
 using AppAudit.Infrastructure;
 using System.Runtime.Versioning;
 

@@ -12,4 +12,8 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.0.8" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AppAudit.Core\AppAudit.Core.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,4 @@
-﻿using AppAudit.Core.Abstractions;
+﻿using AppAudit.Abstractions;
 using AppAudit.Core.Models;
 using System.Text.Json;
 

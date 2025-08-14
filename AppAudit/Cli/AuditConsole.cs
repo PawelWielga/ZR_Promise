@@ -1,4 +1,4 @@
-﻿using AppAudit.Core;
+﻿using AppAudit.Infrastructure;
 using System.Runtime.Versioning;
 
 namespace AppAudit.Cli;
