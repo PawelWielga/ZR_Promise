@@ -9,7 +9,7 @@ using System.Text;
 namespace AppAudit.Infrastructure;
 
 [SupportedOSPlatform("windows")]
-public sealed class ProgramScanner
+internal static class ProgramScanner
 {
     private static readonly (RegistryHive hive, string hiveName)[] Hives =
     [

@@ -2,7 +2,7 @@
 
 internal sealed class AppOptions
 {
-    public int IntervalMinutes { get; set; } = 5;
+    public int IntervalMinutes { get; set; } = 1;
     public bool RunAsService { get; set; } = false;
     public bool Once { get; set; } = false;
     public bool ShowHelp { get; set; } = false;

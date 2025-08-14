@@ -1,10 +1,10 @@
-﻿namespace AppAudit.Console
+﻿namespace AppAudit.Cli
 {
     internal static class Usage
     {
         public static void Print()
         {
-            System.Console.WriteLine(
+            Console.WriteLine(
                 "Usage:" + Environment.NewLine +
                 "  AppAudit.exe [options]" + Environment.NewLine +
                 "Options:" + Environment.NewLine +

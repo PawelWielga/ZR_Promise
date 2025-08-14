@@ -1,7 +1,7 @@
 ﻿using AppAudit.Core;
 using System.Runtime.Versioning;
 
-namespace AppAudit.Console;
+namespace AppAudit.Cli;
 
 [SupportedOSPlatform("windows")]
 internal static class Program
@@ -20,7 +20,7 @@ internal static class Program
         }
         catch (Exception ex)
         {
-            System.Console.Error.WriteLine($"[ERROR] {ex.Message}");
+            Console.Error.WriteLine($"[ERROR] {ex.Message}");
             Usage.Print();
             return 2;
         }
@@ -28,7 +28,7 @@ internal static class Program
         if (opt.RunAsService)
         {
             // TODO: Uruchamianie jako usługa
-            System.Console.WriteLine("[INFO] Service mode enabled (placeholder)");
+            Console.WriteLine("[INFO] Service mode enabled (placeholder)");
             return 0;
         }
 
