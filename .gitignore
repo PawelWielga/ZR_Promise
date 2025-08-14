@@ -1,0 +1,84 @@
+# Wygenerowane pliki binarne i kompilacji
+bin/
+obj/
+Bin/
+Obj/
+
+# Pliki użytkownika Visual Studio
+*.user
+*.userosscache
+*.sln.docstates
+
+# Pliki tymczasowe Visual Studio
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Katalog .vs utworzony przez Visual Studio 2015 i nowsze
+.vs/
+
+# Pliki ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Pliki TeamCity
+_TeamCity*
+
+# Pliki narzędzi budowania .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# StyleCop
+StyleCopReport.xml
+
+# Pliki instalatorów
+*.exe
+*.msi
+
+# Pliki logów
+*.log
+
+# Pliki konfiguracyjne (jeśli nie chcesz ich commitować)
+*.config
+!*.template.config
+
+# Pliki środowiska deweloperskiego
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Pliki NuGet
+*.nuget.props
+*.nuget.targets
+
+# Pliki tymczasowe systemu
+Thumbs.db
+.DS_Store
+
+# Pliki debugowania
+*.pdb
+*.mdb
+
+# Pliki pakietów
+*.nupkg
+*.snupkg
+
+# Pliki testów
+TestResults/
+
+# Pliki coverage
+coverage/
+*.coverage
+*.coverlet.json
+
+# Pliki IDE
+*.ide/
+*.idea/
+
+# Pliki sesji debugowania
+*.vshost.*
