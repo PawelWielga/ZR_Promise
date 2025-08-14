@@ -1,4 +1,6 @@
 ﻿using AppAudit.Core;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.Runtime.Versioning;
 
 namespace AppAudit.Cli;
@@ -8,11 +10,11 @@ internal static class Program
 {
     public static async Task<int> Main(string[] args)
     {
-        AppOptions opt;
+        AppOptions appOptions;
         try
         {
-            opt = AppOptions.Parse(args);
-            if (opt.ShowHelp)
+            appOptions = AppOptions.Parse(args);
+            if (appOptions.ShowHelp)
             {
                 Usage.Print();
                 return 0;
@@ -25,15 +27,25 @@ internal static class Program
             return 2;
         }
 
-        if (opt.RunAsService)
+        if (appOptions.RunAsService)
         {
-            // TODO: Uruchamianie jako usługa
-            Console.WriteLine("[INFO] Service mode enabled (placeholder)");
+            using var host = Host.CreateDefaultBuilder(args)
+                .UseWindowsService(options =>
+                {
+                    options.ServiceName = "AppAudit Service";
+                })
+                .ConfigureServices(services =>
+                {
+                    services.AddSingleton(appOptions);
+                    services.AddHostedService<AuditWorker>();
+                })
+                .Build();
+
+            await host.RunAsync();
             return 0;
         }
 
-        var app = new ConsoleApp(opt);
+        var app = new AuditConsole(appOptions);
         return await app.RunAsync();
     }
 }
-
