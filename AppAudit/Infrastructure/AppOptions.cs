@@ -6,7 +6,7 @@ internal sealed class AppOptions
     public bool RunAsService { get; set; } = false;
     public bool Once { get; set; } = false;
     public bool ShowHelp { get; set; } = false;
-    public string CsvPath { get; set; } = Path.GetFullPath("./programs_log.csv");
+    public string CsvPath { get; set; } = Path.GetFullPath("C:\\tmp\\programs_log.csv");
 
     public static AppOptions Parse(string[] args)
     {
@@ -32,6 +32,10 @@ internal sealed class AppOptions
 
                 case "--once":
                     o.Once = true; break;
+
+                case "--csv-path":
+                    RequireValue(args, ++i, arg, out var csv);
+                    o.CsvPath = Path.GetFullPath(csv); break;
 
                 default:
                     throw new ArgumentException($"Unknown parameter: {arg}");
