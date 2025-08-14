@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 
 namespace AppAudit.Cli
 {
@@ -12,7 +12,9 @@ namespace AppAudit.Cli
             sb.AppendLine("  AppAudit.exe [options]");
             sb.AppendLine("Options:");
             sb.AppendLine("  --interval-minutes <minutes>    Interval between scans (default: 1)");
+            sb.AppendLine("  --save-to <csv|api>             Destination for results (default: csv)");
             sb.AppendLine("  --csv-path <path>               Path to CSV output file (default: C:\\tmp\\programs_log.csv)");
+            sb.AppendLine("  --api-url <url>                 Endpoint to send results when saving to API");
             sb.AppendLine("  --service                       Run as Windows Service");
             sb.AppendLine("  --once                          Run only one scan and exit");
             sb.AppendLine("  --help                          Show this help");

@@ -1,8 +1,7 @@
-﻿using AppAudit.Abstractions;
-using AppAudit.Core.Models;
+﻿using AppAudit.Core.Models;
 using System.Text.Json;
 
-namespace AppAudit.Infrastructure;
+namespace AppAudit.Infrastructure.Deduplication;
 
 internal sealed class FileDeduplicator : IDeduplicator
 {

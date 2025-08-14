@@ -1,4 +1,12 @@
-﻿namespace AppAudit.Infrastructure;
+using AppAudit.Helpers;
+
+namespace AppAudit.Cli.Options;
+
+internal enum SaveDestination
+{
+    Csv,
+    Api
+}
 
 internal sealed class AppOptions
 {
@@ -7,6 +15,9 @@ internal sealed class AppOptions
     public bool Once { get; set; } = false;
     public bool ShowHelp { get; set; } = false;
     public string CsvPath { get; set; } = Path.GetFullPath("C:\\tmp\\programs_log.csv");
+    public string? ApiUrl { get; set; }
+    public SaveDestination Destination { get; set; } = SaveDestination.Csv;
+    public string DeviceId { get; set; } = DeviceIdProvider.GetDeviceId();
 
     public static AppOptions Parse(string[] args)
     {
@@ -37,10 +48,28 @@ internal sealed class AppOptions
                     RequireValue(args, ++i, arg, out var csv);
                     o.CsvPath = Path.GetFullPath(csv); break;
 
+                case "--api-url":
+                    RequireValue(args, ++i, arg, out var url);
+                    o.ApiUrl = url; break;
+
+                case "--save-to":
+                    RequireValue(args, ++i, arg, out var dest);
+                    if (string.Equals(dest, "csv", StringComparison.OrdinalIgnoreCase))
+                        o.Destination = SaveDestination.Csv;
+                    else if (string.Equals(dest, "api", StringComparison.OrdinalIgnoreCase))
+                        o.Destination = SaveDestination.Api;
+                    else
+                        throw new ArgumentException("Invalid value for --save-to.");
+                    break;
+
                 default:
                     throw new ArgumentException($"Unknown parameter: {arg}");
             }
         }
+
+        if (o.Destination == SaveDestination.Api && string.IsNullOrWhiteSpace(o.ApiUrl))
+            throw new ArgumentException("--api-url is required when saving to API.");
+
         return o;
     }
 

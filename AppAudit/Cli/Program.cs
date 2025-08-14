@@ -1,5 +1,8 @@
-﻿using AppAudit.Abstractions;
-using AppAudit.Infrastructure;
+using AppAudit.Cli.Audit;
+using AppAudit.Cli.Options;
+using AppAudit.Infrastructure.Deduplication;
+using AppAudit.Infrastructure.Scanners;
+using AppAudit.Infrastructure.Writers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Runtime.Versioning;
@@ -38,12 +41,19 @@ internal static class Program
                 .ConfigureServices(services =>
                 {
                     services.AddSingleton(appOptions);
-                    services.AddSingleton<IResultWriter, CsvResultWriter>();
                     services.AddSingleton<IDeduplicator>(sp =>
                     {
                         var opt = sp.GetRequiredService<AppOptions>();
                         var statePath = Path.ChangeExtension(opt.CsvPath, ".state.json");
                         return new FileDeduplicator(statePath);
+                    });
+                    services.AddSingleton<IProgramScanner, RegistryProgramScanner>();
+                    services.AddSingleton<IResultWriter>(sp =>
+                    {
+                        var opt = sp.GetRequiredService<AppOptions>();
+                        return opt.Destination == SaveDestination.Api
+                            ? new ApiResultWriter(opt.ApiUrl!, opt.DeviceId)
+                            : new CsvResultWriter(opt.CsvPath);
                     });
                     services.AddHostedService<AuditWorker>();
                 })

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Versioning;
 
-namespace AppAudit.Cli;
+namespace AppAudit.Cli.Audit;
 
 [SupportedOSPlatform("windows")]
 internal static class AuditLoop

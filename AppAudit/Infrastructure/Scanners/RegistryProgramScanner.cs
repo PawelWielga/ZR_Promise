@@ -1,4 +1,4 @@
-﻿using AppAudit.Core.Models;
+using AppAudit.Core.Models;
 using Microsoft.Win32;
 using System.Collections.Concurrent;
 using System.Globalization;
@@ -6,10 +6,10 @@ using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace AppAudit.Infrastructure;
+namespace AppAudit.Infrastructure.Scanners;
 
 [SupportedOSPlatform("windows")]
-internal static class ProgramScanner
+internal sealed class RegistryProgramScanner : IProgramScanner
 {
     private static readonly (RegistryHive hive, string hiveName)[] Hives =
     [
@@ -17,7 +17,7 @@ internal static class ProgramScanner
         (RegistryHive.CurrentUser, "HKCU")
     ];
 
-    public static IReadOnlyList<ProgramEntry> ScanAll()
+    public IReadOnlyList<ProgramEntry> ScanAll()
     {
         var bag = new ConcurrentDictionary<string, ProgramEntry>();
         var views = new[] { RegistryView.Registry64, RegistryView.Registry32 };
@@ -29,7 +29,7 @@ internal static class ProgramScanner
                 try
                 {
                     using var baseKey = RegistryKey.OpenBaseKey(info.hive, view);
-                    using var uninstall = baseKey.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall");
+                    using var uninstall = baseKey.OpenSubKey(@"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall");
                     if (uninstall is null) continue;
 
                     foreach (var subName in uninstall.GetSubKeyNames())
