@@ -11,7 +11,8 @@ internal sealed class AuditConsole(AppOptions opt)
         using var cts = new CancellationTokenSource();
         Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
 
-        var runner = new AuditRunner(opt);
+        var statePath = System.IO.Path.ChangeExtension(opt.CsvPath, ".state.json");
+        var runner = new AuditRunner(opt, new CsvResultWriter(), new FileDeduplicator(statePath));
 
         await AuditLoop.RunAsync(
             runner.RunOnce,

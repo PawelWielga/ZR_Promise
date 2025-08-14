@@ -1,4 +1,5 @@
-﻿using AppAudit.Infrastructure;
+﻿using AppAudit.Abstractions;
+using AppAudit.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Runtime.Versioning;
@@ -37,6 +38,13 @@ internal static class Program
                 .ConfigureServices(services =>
                 {
                     services.AddSingleton(appOptions);
+                    services.AddSingleton<IResultWriter, CsvResultWriter>();
+                    services.AddSingleton<IDeduplicator>(sp =>
+                    {
+                        var opt = sp.GetRequiredService<AppOptions>();
+                        var statePath = Path.ChangeExtension(opt.CsvPath, ".state.json");
+                        return new FileDeduplicator(statePath);
+                    });
                     services.AddHostedService<AuditWorker>();
                 })
                 .Build();
