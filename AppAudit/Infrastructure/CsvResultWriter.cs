@@ -6,7 +6,7 @@ namespace AppAudit.Infrastructure;
 
 internal sealed class CsvResultWriter : IResultWriter
 {
-    public void WriteAll(IEnumerable<ProgramEntry> items, string path)
+    public void WriteAll(IEnumerable<ProgramEntry> items, string path, DateTimeOffset eventUtc, string scanId)
     {
         var full = Path.GetFullPath(path);
         var dir = Path.GetDirectoryName(full);
@@ -18,14 +18,17 @@ internal sealed class CsvResultWriter : IResultWriter
 
         if (writeHeader)
             writer.WriteLine(string.Join(',',
+                "event_timestamp_utc", "scan_id",
                 "machine_name", "program_id", "display_name", "display_version", "publisher", "install_date",
                 "architecture", "registry_hive", "registry_view", "subkey_path", "uninstall_string",
                 "install_location", "product_code", "install_source", "estimated_size", "display_language"));
 
         var machine = Environment.MachineName;
+        var ts = eventUtc.ToString("o");
         foreach (var e in items)
         {
             writer.WriteLine(string.Join(',',
+                Q(ts), Q(scanId),
                 Q(machine), Q(e.ProgramId), Q(e.DisplayName), Q(e.DisplayVersion), Q(e.Publisher), Q(e.InstallDate),
                 Q(e.Architecture), Q(e.RegistryHive), Q(e.RegistryView), Q(e.SubkeyPath), Q(e.UninstallString),
                 Q(e.InstallLocation), Q(e.ProductCode), Q(e.InstallSource),

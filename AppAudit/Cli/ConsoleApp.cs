@@ -20,13 +20,23 @@ internal sealed class ConsoleApp(AppOptions opt, IResultWriter? writer = null)
 
         do
         {
-            var all = ProgramScanner.ScanAll();
-            var toWrite = dedup.FilterNew(all).ToList();
+            try
+            {
+                var all = ProgramScanner.ScanAll();
+                var toWrite = dedup.FilterNew(all).ToList();
 
-            _writer.WriteAll(toWrite, opt.CsvPath);
-            dedup.Commit(toWrite);
+                var now = DateTimeOffset.UtcNow;
+                var scanId = Guid.NewGuid().ToString("N");
 
-            Console.WriteLine($"found: {all.Count}, new: {toWrite.Count}, file: {opt.CsvPath}");
+                _writer.WriteAll(toWrite, opt.CsvPath, now, scanId);
+                dedup.Commit(toWrite);
+
+                Console.WriteLine($"found: {all.Count}, new: {toWrite.Count}, file: {opt.CsvPath}");
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"[ERROR] {ex.Message}");
+            }
 
             if (opt.Once) break;
             try { await Task.Delay(TimeSpan.FromMinutes(opt.IntervalMinutes), cts.Token); }
