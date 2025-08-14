@@ -1,33 +1,26 @@
-﻿
-using AppAudit.Core;
+﻿using AppAudit.Core;
+using AppAudit.Infrastructure;
+using System.Runtime.Versioning;
 
-namespace AppAudit.Console
+namespace AppAudit.Console;
+
+[SupportedOSPlatform("windows")]
+internal sealed class ConsoleApp(AppOptions opt)
 {
-    internal sealed class ConsoleApp
+    public async Task<int> RunAsync()
     {
-        private readonly AppOptions _opt;
+        using var cts = new CancellationTokenSource();
+        System.Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
 
-        public ConsoleApp(AppOptions opt)
-        {
-            _opt = opt;
-        }
+        var scanner = new ProgramScanner();
+        var entries = ProgramScanner.ScanAll();
 
-        public async Task<int> RunAsync()
-        {
-            using var cts = new CancellationTokenSource();
-            System.Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
+        System.Console.WriteLine($"found: {entries.Count}");
+        foreach (var e in entries.Take(10)) // Wyświetl tylko 10 do testów
+            System.Console.WriteLine($"- {e.DisplayName} {e.DisplayVersion} ({e.RegistryHive} {e.RegistryView})");
 
-            System.Console.WriteLine(
-                "Start (console)" + Environment.NewLine +
-                $"interval: {_opt.IntervalMinutes} min" + Environment.NewLine +
-                $"csv: {_opt.CsvPath}");
-
-            // TODO: Skan rejestru i zapis do CSV
-            if (_opt.Once) return 0;
-            try { await Task.Delay(TimeSpan.FromMinutes(_opt.IntervalMinutes), cts.Token); }
-            catch (TaskCanceledException) { }
-            return 0;
-        }
+        if (opt.Once) return 0;
+        try { await Task.Delay(TimeSpan.FromMinutes(opt.IntervalMinutes), cts.Token); } catch (TaskCanceledException) { }
+        return 0;
     }
-
 }

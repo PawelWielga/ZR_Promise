@@ -1,7 +1,9 @@
 ﻿using AppAudit.Core;
+using System.Runtime.Versioning;
 
 namespace AppAudit.Console;
 
+[SupportedOSPlatform("windows")]
 internal static class Program
 {
     public static async Task<int> Main(string[] args)
