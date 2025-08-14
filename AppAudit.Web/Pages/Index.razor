@@ -1,9 +1,94 @@
 ﻿@page "/"
+@inject IMediator Mediator
+@using AppAudit.Web.CQRS.Queries
+@using AppAudit.Web.CQRS.Commands
 
-<PageTitle>Index</PageTitle>
+<h3>Programy</h3>
 
-<h1>Hello, world!</h1>
+@if (loading)
+{
+    <p>Loading...</p>
+}
+else if (error != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @error
+    </div>
+}
+else if (items is null)
+{
+    <p>No data available.</p>
+}
+else
+{
+    <table class="table">
+        <thead><tr><th>Nazwa</th><th>Wersja</th><th>Wydawca</th><th>Licencja?</th></tr></thead>
+        <tbody>
+            @foreach (var p in items)
+            {
+                <tr>
+                    <td>@p.Name</td>
+                    <td>@p.Version</td>
+                    <td>@p.Publisher</td>
+                    <td><input type="checkbox" checked="@p.RequiresLicense" @onchange="e => Toggle(p.ProgramId, ((bool?)e.Value) ?? false)" /></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
-Welcome to your new app.
+@code {
+    List<ProgramDto>? items;
+    bool loading = true;
+    string? error;
+    CancellationTokenSource? cancellationTokenSource;
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    async Task LoadDataAsync()
+    {
+        try
+        {
+            loading = true;
+            error = null;
+            
+            // Cancel previous request if any
+            cancellationTokenSource?.Cancel();
+            cancellationTokenSource = new CancellationTokenSource();
+            
+            var result = await Mediator.Send(new GetAllProgramsQuery(), cancellationTokenSource.Token);
+            items = result.ToList();
+        }
+        catch (Exception ex)
+        {
+            error = $"Błąd podczas ładowania danych: {ex.Message}";
+            items = null;
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    async Task Toggle(string id, bool val)
+    {
+        try
+        {
+            await Mediator.Send(new MarkRequiresLicenseCommand(id, val));
+            await LoadDataAsync();
+        }
+        catch (Exception ex)
+        {
+            error = $"Błąd podczas aktualizacji danych: {ex.Message}";
+        }
+    }
+
+    public void Dispose()
+    {
+        cancellationTokenSource?.Cancel();
+        cancellationTokenSource?.Dispose();
+    }
+}
