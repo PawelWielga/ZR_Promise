@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AppAudit.Contracts\AppAudit.Contracts.csproj" />
+    <ProjectReference Include="..\AppAudit.Application\AppAudit.Application.csproj" />
   </ItemGroup>
 
 </Project>
