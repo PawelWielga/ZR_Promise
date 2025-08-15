@@ -82,3 +82,4 @@ coverage/
 
 # Pliki sesji debugowania
 *.vshost.*
+/AppAudit.Api/appaudit.db
