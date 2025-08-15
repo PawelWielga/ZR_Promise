@@ -1,0 +1,81 @@
+﻿@page "/licenses"
+@inject IMediator Mediator
+
+<h1>Wymagające licencji</h1>
+
+@if (_loading)
+{
+    <p>Ładowanie…</p>
+}
+else if (!string.IsNullOrWhiteSpace(_error))
+{
+
+    <div class="alert">@_error</div>
+}
+else if (_items.Count == 0)
+{
+
+    <p>Brak pozycji wymagających licencji bez klucza.</p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr><th>Nazwa</th><th>Wersja</th><th>Wydawca</th><th>Klucz licencji</th><th></th></tr>
+        </thead>
+        <tbody>
+            @foreach (var p in _items)
+            {
+                <tr>
+                    <td>@p.Name</td>
+                    <td>@p.Version</td>
+                    <td>@p.Publisher</td>
+                    <td>
+                        <input type="text" @bind="_edit[p.ProgramId]" placeholder="Wpisz klucz…" />
+                    </td>
+                    <td>
+                        <button @onclick="() => Save(p.ProgramId)">Zapisz</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    bool _loading = true;
+    string? _error;
+    List<ProgramRecord> _items = new();
+    Dictionary<Guid, string?> _edit = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var page = await Mediator.Send(new GetProgramsPageQuery(Page: 1, PageSize: 500, Search: null, RequiresOnly: true));
+
+            _items = page.Items
+                .Where(x => string.IsNullOrWhiteSpace(x.LicenseKey))
+                .OrderBy(x => x.Name)
+                .ToList();
+
+            foreach (var i in _items)
+                _edit[i.ProgramId] = i.LicenseKey ?? "";
+        }
+        catch (Exception ex) { _error = ex.Message; }
+        finally { _loading = false; }
+    }
+
+    async Task Save(Guid id)
+    {
+        try
+        {
+            var key = _edit.TryGetValue(id, out var v) ? v : null;
+            await Mediator.Send(new SetLicenseKeyCommand(id, key));
+
+            var idx = _items.FindIndex(x => x.ProgramId == id);
+            if (idx >= 0) _items[idx] = _items[idx] with { LicenseKey = key };
+        }
+        catch (Exception ex) { _error = ex.Message; }
+    }
+}

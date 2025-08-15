@@ -1,4 +1,4 @@
-﻿using AppAudit.Contracts.Programs.Queries;
+﻿using AppAudit.Contracts.Summary.Queries;
 using MediatR;
 
 namespace AppAudit.Api.Endpoints;

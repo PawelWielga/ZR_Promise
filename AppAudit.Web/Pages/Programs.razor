@@ -1,0 +1,121 @@
+﻿@page "/programs"
+@implements IDisposable
+@inject IMediator Mediator
+
+
+
+<h1>Programy</h1>
+
+<input type="text"
+       placeholder="Szukaj nazwy/wydawcy…"
+       value="@_search"
+       @oninput="OnSearchInput"
+       style="margin:8px 0; width:100%; max-width:420px" />
+
+@if (_loading) { <p>Ładowanie…</p> }
+else if (!string.IsNullOrWhiteSpace(_error)) { <div class="alert">@_error</div> }
+else if (_items.Count == 0) { <p>Brak danych.</p> }
+else
+{
+    <Paginator TItem="ProgramRecord"
+                          TotalItems="@_total"
+                          PageSize="@_pageSize"
+                          PageIndex="@_pageIndex"
+                          PageSizeOptions="new[] {10,25,50,100}"
+                          OnPageChanged="OnPageChanged"
+                          OnPageSizeChanged="OnPageSizeChanged" />
+
+    <table>
+        <thead>
+            <tr><th>Nazwa</th><th>Wersja</th><th>Wydawca</th><th>Licencja?</th></tr>
+        </thead>
+        <tbody>
+        @foreach (var p in _items)
+        {
+            <tr>
+                <td>@p.Name</td>
+                <td>@p.Version</td>
+                <td>@p.Publisher</td>
+                <td>
+                    <input type="checkbox" checked="@p.RequiresLicense"
+                           @onchange="async e => await Toggle(p.ProgramId, ((bool?)e.Value) ?? false)" />
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <Paginator TItem="ProgramRecord"
+                          TotalItems="@_total"
+                          PageSize="@_pageSize"
+                          PageIndex="@_pageIndex"
+                          PageSizeOptions="new[] {10,25,50,100}"
+                          OnPageChanged="OnPageChanged"
+                          OnPageSizeChanged="OnPageSizeChanged" />
+}
+
+@code {
+    bool _loading = true;
+    string? _error;
+
+    List<ProgramRecord> _items = new();
+    int _total;
+
+    int _pageSize = 25;
+    int _pageIndex = 1;
+    string _search = "";
+
+    System.Timers.Timer? _debounce;
+
+    protected override async Task OnInitializedAsync() => await Load();
+
+    async Task Load()
+    {
+        try
+        {
+            _loading = true;
+            var search = string.IsNullOrWhiteSpace(_search) ? null : _search;
+            var res = await Mediator.Send(new GetProgramsPageQuery(_pageIndex, _pageSize, search));
+            _items = res.Items.ToList();
+            _total = res.Total;
+        }
+        catch (Exception ex) { _error = ex.Message; }
+        finally { _loading = false; StateHasChanged(); }
+    }
+
+    async Task Toggle(Guid id, bool requires)
+    {
+        try
+        {
+            await Mediator.Send(new SetRequiresLicenseCommand(id, requires));
+            var idx = _items.FindIndex(x => x.ProgramId == id);
+            if (idx >= 0) _items[idx] = _items[idx] with { RequiresLicense = requires };
+            StateHasChanged();
+        }
+        catch (Exception ex) { _error = ex.Message; }
+    }
+
+    async Task OnPageChanged(int page)
+    {
+        _pageIndex = page;
+        await Load();
+    }
+
+    async Task OnPageSizeChanged(int size)
+    {
+        _pageSize = size;
+        _pageIndex = 1;
+        await Load();
+    }
+
+    void OnSearchInput(ChangeEventArgs e)
+    {
+        _search = e.Value?.ToString() ?? "";
+        _debounce?.Stop();
+        _debounce ??= new System.Timers.Timer(400) { AutoReset = false };
+        _debounce.Elapsed += async (_, __) => await InvokeAsync(async () => { _pageIndex = 1; await Load(); });
+        _debounce.Start();
+    }
+
+    public void Dispose() => _debounce?.Dispose();
+}

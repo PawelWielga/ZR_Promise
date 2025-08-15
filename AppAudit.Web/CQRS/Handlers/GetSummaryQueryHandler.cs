@@ -1,5 +1,5 @@
 ﻿using AppAudit.Contracts;
-using AppAudit.Contracts.Programs.Queries;
+using AppAudit.Contracts.Summary.Queries;
 using MediatR;
 
 namespace AppAudit.Web.CQRS.Handlers;

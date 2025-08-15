@@ -12,8 +12,17 @@ public static class ProgramsEndpoints
         var group = app.MapGroup("/api/programs");
 
         // GET: lista programów
-        group.MapGet("", async (IMediator mediator)
-            => Results.Ok(await mediator.Send(new GetProgramsQuery())));
+        group.MapGet("", async (
+            IMediator mediator,
+            int page = 1,
+            int pageSize = 25,
+            string? search = null,
+            bool? requiresOnly = null
+        ) =>
+        {
+            var res = await mediator.Send(new GetProgramsPageQuery(page, pageSize, search, requiresOnly));
+            return Results.Ok(res);
+        });
 
         // POST: upsert
         group.MapPost("", async (IMediator mediator, ProgramRecord dto) =>

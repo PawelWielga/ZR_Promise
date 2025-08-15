@@ -14,7 +14,13 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             e.HasKey(x => x.ProgramId);
             e.HasIndex(x => x.ProgramId).IsUnique();
             e.Property(x => x.Name).IsRequired();
-            e.Property(x => x.DiscoveredAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            e.Property(x => x.DiscoveredAt)
+             .HasConversion(
+                 v => v.ToUnixTimeMilliseconds(),
+                 v => DateTimeOffset.FromUnixTimeMilliseconds(v)
+             );
+
             e.Property(x => x.Version).HasMaxLength(200);
             e.Property(x => x.Publisher).HasMaxLength(300);
             e.Property(x => x.LicenseKey).HasMaxLength(500);

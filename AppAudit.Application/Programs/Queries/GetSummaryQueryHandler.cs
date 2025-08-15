@@ -1,6 +1,6 @@
 ﻿using AppAudit.Application.Abstractions;
 using AppAudit.Contracts;
-using AppAudit.Contracts.Programs.Queries;
+using AppAudit.Contracts.Summary.Queries;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

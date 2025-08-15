@@ -1,0 +1,152 @@
+﻿@typeparam TItem
+
+<div class="paginator" aria-label="Paginacja">
+    <div class="left">
+        <span>Na stronę:</span>
+        <select value="@PageSize" @onchange="OnSizeChanged">
+            @foreach (var opt in PageSizeOptions ?? new[] { 10, 25, 50, 100 })
+            {
+                <option value="@opt">@opt</option>
+            }
+        </select>
+        <span>• @TotalItems elementów</span>
+    </div>
+    <div class="right">
+        <button @onclick="Prev" disabled="@(_pageIndex <= 1)">«</button>
+
+        @if (_totalPages > 1)
+        {
+            var window = Window(_pageIndex, _totalPages, 2);
+            int start = window.start;
+            int end = window.end;
+
+            if (start > 1)
+            {
+                var pageNum = 1;
+                <button class="@GetBtnClass(pageNum)" @onclick="() => Jump(pageNum)">1</button>
+                if (start > 2)
+                {
+
+                    <span class="dots">…</span>
+                    ;
+                }
+            }
+
+            for (int i = start; i <= end; i++)
+            {
+                var pageNum = i;
+
+                <!-- unikamy pułapki domknięć -->
+                <button class="@GetBtnClass(pageNum)" @onclick="() => Jump(pageNum)">@pageNum</button>
+            }
+
+            if (end < _totalPages)
+            {
+                if (end < _totalPages - 1)
+                {
+
+                    <span class="dots">…</span>
+                    ;
+                }
+                var pageNum = _totalPages;
+                <button class="@GetBtnClass(pageNum)" @onclick="() => Jump(pageNum)">@pageNum</button>
+            }
+        }
+
+        <button @onclick="Next" disabled="@(_pageIndex >= _totalPages)">»</button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int TotalItems { get; set; }
+    [Parameter] public int PageSize { get; set; } = 25;
+    [Parameter] public int PageIndex { get; set; } = 1; // 1-based
+    [Parameter] public int[]? PageSizeOptions { get; set; }
+    [Parameter] public EventCallback<int> OnPageChanged { get; set; }
+    [Parameter] public EventCallback<int> OnPageSizeChanged { get; set; }
+
+    int _pageIndex;
+    int _totalPages;
+
+    protected override void OnParametersSet()
+    {
+        _pageIndex = Math.Max(1, PageIndex);
+        _totalPages = Math.Max(1, (int)Math.Ceiling(TotalItems / (double)Math.Max(1, PageSize)));
+        if (_pageIndex > _totalPages) _pageIndex = _totalPages;
+    }
+
+    string GetBtnClass(int i) => i == _pageIndex ? "btn active" : "btn";
+
+    static (int start, int end) Window(int current, int total, int radius)
+    {
+        var start = Math.Max(1, current - radius);
+        var end = Math.Min(total, current + radius);
+        if (end - start < radius * 2) end = Math.Min(total, start + radius * 2);
+        if (end - start < radius * 2) start = Math.Max(1, end - radius * 2);
+        return (start, end);
+    }
+
+    async Task Jump(int i)
+    {
+        if (i == _pageIndex) return;
+        _pageIndex = i;
+        await OnPageChanged.InvokeAsync(_pageIndex);
+    }
+
+    async Task Prev() => await Jump(Math.Max(1, _pageIndex - 1));
+    async Task Next() => await Jump(Math.Min(_totalPages, _pageIndex + 1));
+
+    async Task OnSizeChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var size) && size > 0)
+        {
+            await OnPageSizeChanged.InvokeAsync(size);
+        }
+    }
+}
+
+<style>
+    .paginator {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10px 0
+    }
+
+        .paginator .left {
+            display: flex;
+            gap: 10px;
+            align-items: center
+        }
+
+        .paginator .right {
+            display: flex;
+            gap: 6px;
+            align-items: center
+        }
+
+        .paginator .btn {
+            background: #222;
+            border: 1px solid #444;
+            padding: 4px 8px;
+            border-radius: 6px
+        }
+
+            .paginator .btn.active {
+                background: #2d6cdf;
+                border-color: #2d6cdf
+            }
+
+        .paginator .dots {
+            padding: 0 4px;
+            opacity: .7
+        }
+
+    select {
+        background: #222;
+        border: 1px solid #444;
+        color: #ddd;
+        padding: 4px 6px;
+        border-radius: 6px
+    }
+</style>

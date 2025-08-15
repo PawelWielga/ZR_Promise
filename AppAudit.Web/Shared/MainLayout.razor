@@ -1,19 +1,28 @@
 ﻿@inherits LayoutComponentBase
-
-<PageTitle>AppAudit.Web</PageTitle>
-
 <div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
-
     <main>
         <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            <h3>AppAudit</h3>
         </div>
-
-        <article class="content px-4">
+        <div class="content px-4">
             @Body
-        </article>
+        </div>
     </main>
 </div>
+
+<style>
+    .page{display:flex;min-height:100vh}
+    .sidebar{width:220px;background:#20232a;color:#fff}
+    .sidebar a{color:#cfd8dc;text-decoration:none;display:block;padding:10px 14px}
+    .sidebar a.active{background:#2c313c}
+    main{flex:1;background:#111;color:#ddd}
+    .top-row{border-bottom:1px solid #333}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px;border-bottom:1px solid #333}
+    input[type="text"]{background:#222;border:1px solid #444;color:#ddd;padding:6px;border-radius:6px}
+    button{background:#2d6cdf;border:0;color:white;padding:6px 10px;border-radius:8px;cursor:pointer}
+    button:disabled{opacity:.5;cursor:default}
+</style>

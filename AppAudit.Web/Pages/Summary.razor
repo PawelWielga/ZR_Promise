@@ -1,0 +1,46 @@
+﻿@page "/summary"
+@inject IMediator Mediator
+@inject IHttpClientFactory HttpFactory
+
+<h1>Podsumowanie</h1>
+
+@if (_loading)
+{
+    <p>Ładowanie…</p>
+}
+else if (!string.IsNullOrWhiteSpace(_error))
+{
+
+    <div class="alert">@_error</div>
+}
+else
+{
+    <ul>
+        <li>Wszystkich programów: <b>@_sum.TotalPrograms</b></li>
+        <li>Wymaga licencji: <b>@_sum.RequiringLicense</b></li>
+        <li>Wymaga licencji i brak klucza: <b>@_sum.WithoutLicenseKey</b></li>
+    </ul>
+
+    <a href="@_exportUrl" target="_blank">
+        <button>Pobierz CSV brakujących licencji</button>
+    </a>
+}
+
+@code {
+    bool _loading = true;
+    string? _error;
+    SummaryDto _sum = new(0, 0, 0);
+    string _exportUrl = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _sum = await Mediator.Send(new GetSummaryQuery());
+            var apiBase = HttpFactory.CreateClient("Api").BaseAddress?.ToString().TrimEnd('/');
+            _exportUrl = $"{apiBase}/api/export.csv";
+        }
+        catch (Exception ex) { _error = ex.Message; }
+        finally { _loading = false; }
+    }
+}

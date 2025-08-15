@@ -1,5 +1,5 @@
 ﻿using MediatR;
 
-namespace AppAudit.Contracts.Programs.Queries;
+namespace AppAudit.Contracts.Summary.Queries;
 
 public sealed record GetSummaryQuery() : IRequest<SummaryDto>;
