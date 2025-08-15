@@ -1,18 +1,23 @@
 ﻿@typeparam TItem
 
-<div class="paginator" aria-label="Paginacja">
-    <div class="left">
-        <span>Na stronę:</span>
-        <select value="@PageSize" @onchange="OnSizeChanged">
+<div class="flex flex-wrap items-center justify-between gap-3 py-2">
+    <div class="flex items-center gap-3 text-sm">
+        <span class="text-gray-300">Na stronę:</span>
+        <select value="@PageSize" @onchange="OnSizeChanged"
+                class="bg-gray-800 border border-gray-700 text-gray-200 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-gray-600">
             @foreach (var opt in PageSizeOptions ?? new[] { 10, 25, 50, 100 })
             {
                 <option value="@opt">@opt</option>
             }
         </select>
-        <span>• @TotalItems elementów</span>
+        <span class="text-gray-400">• @TotalItems elementów</span>
     </div>
-    <div class="right">
-        <button @onclick="Prev" disabled="@(_pageIndex <= 1)">«</button>
+
+    <div class="flex items-center gap-1.5">
+        <button @onclick="Prev" disabled="@(_pageIndex <= 1)"
+                class="inline-flex items-center justify-center h-8 min-w-8 px-2 rounded-md border border-gray-700 bg-gray-800 text-gray-200 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
+            «
+        </button>
 
         @if (_totalPages > 1)
         {
@@ -26,17 +31,13 @@
                 <button class="@GetBtnClass(pageNum)" @onclick="() => Jump(pageNum)">1</button>
                 if (start > 2)
                 {
-
-                    <span class="dots">…</span>
-                    ;
+                    <span class="px-1 text-gray-400">…</span>
                 }
             }
 
             for (int i = start; i <= end; i++)
             {
                 var pageNum = i;
-
-                <!-- unikamy pułapki domknięć -->
                 <button class="@GetBtnClass(pageNum)" @onclick="() => Jump(pageNum)">@pageNum</button>
             }
 
@@ -44,29 +45,33 @@
             {
                 if (end < _totalPages - 1)
                 {
-
-                    <span class="dots">…</span>
-                    ;
+                    <span class="px-1 text-gray-400">…</span>
                 }
                 var pageNum = _totalPages;
                 <button class="@GetBtnClass(pageNum)" @onclick="() => Jump(pageNum)">@pageNum</button>
             }
         }
 
-        <button @onclick="Next" disabled="@(_pageIndex >= _totalPages)">»</button>
+        <button @onclick="Next" disabled="@(_pageIndex >= _totalPages)"
+                class="inline-flex items-center justify-center h-8 min-w-8 px-2 rounded-md border border-gray-700 bg-gray-800 text-gray-200 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
+            »
+        </button>
     </div>
 </div>
 
 @code {
     [Parameter] public int TotalItems { get; set; }
     [Parameter] public int PageSize { get; set; } = 25;
-    [Parameter] public int PageIndex { get; set; } = 1; // 1-based
+    [Parameter] public int PageIndex { get; set; } = 1;
     [Parameter] public int[]? PageSizeOptions { get; set; }
     [Parameter] public EventCallback<int> OnPageChanged { get; set; }
     [Parameter] public EventCallback<int> OnPageSizeChanged { get; set; }
 
     int _pageIndex;
     int _totalPages;
+
+    const string BtnBase = "inline-flex items-center justify-center h-8 min-w-8 px-2 rounded-md border border-gray-700 bg-gray-800 text-gray-200 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600 disabled:opacity-50 disabled:cursor-not-allowed";
+    const string BtnActive = " bg-blue-600 border-blue-600 text-white hover:bg-blue-600";
 
     protected override void OnParametersSet()
     {
@@ -75,7 +80,7 @@
         if (_pageIndex > _totalPages) _pageIndex = _totalPages;
     }
 
-    string GetBtnClass(int i) => i == _pageIndex ? "btn active" : "btn";
+    string GetBtnClass(int i) => i == _pageIndex ? BtnBase + BtnActive : BtnBase;
 
     static (int start, int end) Window(int current, int total, int radius)
     {
@@ -104,49 +109,3 @@
         }
     }
 }
-
-<style>
-    .paginator {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 10px 0
-    }
-
-        .paginator .left {
-            display: flex;
-            gap: 10px;
-            align-items: center
-        }
-
-        .paginator .right {
-            display: flex;
-            gap: 6px;
-            align-items: center
-        }
-
-        .paginator .btn {
-            background: #222;
-            border: 1px solid #444;
-            padding: 4px 8px;
-            border-radius: 6px
-        }
-
-            .paginator .btn.active {
-                background: #2d6cdf;
-                border-color: #2d6cdf
-            }
-
-        .paginator .dots {
-            padding: 0 4px;
-            opacity: .7
-        }
-
-    select {
-        background: #222;
-        border: 1px solid #444;
-        color: #ddd;
-        padding: 4px 6px;
-        border-radius: 6px
-    }
-</style>

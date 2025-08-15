@@ -2,28 +2,43 @@
 @inject IMediator Mediator
 @inject IHttpClientFactory HttpFactory
 
-<h1>Podsumowanie</h1>
+<div class="mb-4 flex items-center justify-between">
+    <h1 class="text-lg font-semibold">Podsumowanie</h1>
+</div>
 
 @if (_loading)
 {
-    <p>Ładowanie…</p>
+    <div class="rounded-md border border-gray-800 bg-gray-900/60 px-4 py-3 text-sm text-gray-300">Ładowanie…</div>
 }
 else if (!string.IsNullOrWhiteSpace(_error))
 {
-
-    <div class="alert">@_error</div>
+    <div class="rounded-md border border-red-800/50 bg-red-900/30 px-4 py-3 text-sm text-red-200">@_error</div>
 }
 else
 {
-    <ul>
-        <li>Wszystkich programów: <b>@_sum.TotalPrograms</b></li>
-        <li>Wymaga licencji: <b>@_sum.RequiringLicense</b></li>
-        <li>Wymaga licencji i brak klucza: <b>@_sum.WithoutLicenseKey</b></li>
-    </ul>
+    <div class="max-w-sm overflow-hidden rounded-xl border border-gray-800 bg-gray-900/40">
+        <ul class="divide-y divide-gray-800 text-sm">
+            <li class="flex items-center justify-between px-4 py-3">
+                <span class="text-gray-300">Wszystkich programów</span>
+                <b class="text-gray-100">@_sum.TotalPrograms</b>
+            </li>
+            <li class="flex items-center justify-between px-4 py-3">
+                <span class="text-gray-300">Wymaga licencji</span>
+                <b class="text-gray-100">@_sum.RequiringLicense</b>
+            </li>
+            <li class="flex items-center justify-between px-4 py-3">
+                <span class="text-gray-300">Wymaga licencji i brak klucza</span>
+                <b class="text-gray-100">@_sum.WithoutLicenseKey</b>
+            </li>
+        </ul>
+    </div>
 
-    <a href="@_exportUrl" target="_blank">
-        <button>Pobierz CSV brakujących licencji</button>
-    </a>
+    <div class="mt-4">
+        <a href="@_exportUrl" target="_blank"
+           class="inline-flex items-center gap-2 rounded-md border border-gray-700 bg-gray-800 px-4 py-2 text-sm font-medium text-gray-100 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600">
+            Pobierz CSV brakujących licencji
+        </a>
+    </div>
 }
 
 @code {

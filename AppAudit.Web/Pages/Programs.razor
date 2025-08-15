@@ -2,69 +2,83 @@
 @implements IDisposable
 @inject IMediator Mediator
 
+<div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <h1 class="text-lg font-semibold">Programy</h1>
+    <input type="text"
+           placeholder="Szukaj nazwy/wydawcy…"
+           value="@_search"
+           @oninput="OnSearchInput"
+           class="w-full sm:w-[420px] rounded-md border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-600" />
+</div>
 
-
-<h1>Programy</h1>
-
-<input type="text"
-       placeholder="Szukaj nazwy/wydawcy…"
-       value="@_search"
-       @oninput="OnSearchInput"
-       style="margin:8px 0; width:100%; max-width:420px" />
-
-@if (_loading) { <p>Ładowanie…</p> }
-else if (!string.IsNullOrWhiteSpace(_error)) { <div class="alert">@_error</div> }
-else if (_items.Count == 0) { <p>Brak danych.</p> }
+@if (_loading)
+{
+    <div class="rounded-md border border-gray-800 bg-gray-900/60 px-4 py-3 text-sm text-gray-300">Ładowanie…</div>
+}
+else if (!string.IsNullOrWhiteSpace(_error))
+{
+    <div class="rounded-md border border-red-800/50 bg-red-900/30 px-4 py-3 text-sm text-red-200">@_error</div>
+}
+else if (_items.Count == 0)
+{
+    <div class="rounded-md border border-gray-800 bg-gray-900/60 px-4 py-6 text-center text-sm text-gray-400">Brak danych.</div>
+}
 else
 {
     <Paginator TItem="ProgramRecord"
-                          TotalItems="@_total"
-                          PageSize="@_pageSize"
-                          PageIndex="@_pageIndex"
-                          PageSizeOptions="new[] {10,25,50,100}"
-                          OnPageChanged="OnPageChanged"
-                          OnPageSizeChanged="OnPageSizeChanged" />
+               TotalItems="@_total"
+               PageSize="@_pageSize"
+               PageIndex="@_pageIndex"
+               PageSizeOptions="new[] {10,25,50,100}"
+               OnPageChanged="OnPageChanged"
+               OnPageSizeChanged="OnPageSizeChanged" />
 
-    <table>
-        <thead>
-            <tr><th>Nazwa</th><th>Wersja</th><th>Wydawca</th><th>Licencja?</th></tr>
-        </thead>
-        <tbody>
-        @foreach (var p in _items)
-        {
-            <tr>
-                <td>@p.Name</td>
-                <td>@p.Version</td>
-                <td>@p.Publisher</td>
-                <td>
-                    <input type="checkbox" checked="@p.RequiresLicense"
-                           @onchange="async e => await Toggle(p.ProgramId, ((bool?)e.Value) ?? false)" />
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
+    <div class="mt-3 overflow-x-auto rounded-xl border border-gray-800 bg-gray-900/40">
+        <table class="min-w-full table-auto">
+            <thead class="bg-gray-800/60">
+                <tr class="text-left text-xs font-semibold uppercase tracking-wide text-gray-300">
+                    <th class="px-4 py-3">Nazwa</th>
+                    <th class="px-4 py-3">Wersja</th>
+                    <th class="px-4 py-3">Wydawca</th>
+                    <th class="px-4 py-3">Wymaga licencji</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800 text-sm">
+                @foreach (var p in _items)
+                {
+                    <tr class="hover:bg-gray-800/40">
+                        <td class="px-4 py-2 align-middle">@p.Name</td>
+                        <td class="px-4 py-2 align-middle">@p.Version</td>
+                        <td class="px-4 py-2 align-middle">@p.Publisher</td>
+                        <td class="px-4 py-2 align-middle">
+                            <input type="checkbox"
+                                   class="h-4 w-4 accent-blue-600"
+                                   checked="@p.RequiresLicense"
+                                   @onchange="async e => await Toggle(p.ProgramId, ((bool?)e.Value) ?? false)" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 
     <Paginator TItem="ProgramRecord"
-                          TotalItems="@_total"
-                          PageSize="@_pageSize"
-                          PageIndex="@_pageIndex"
-                          PageSizeOptions="new[] {10,25,50,100}"
-                          OnPageChanged="OnPageChanged"
-                          OnPageSizeChanged="OnPageSizeChanged" />
+               TotalItems="@_total"
+               PageSize="@_pageSize"
+               PageIndex="@_pageIndex"
+               PageSizeOptions="new[] {10,25,50,100}"
+               OnPageChanged="OnPageChanged"
+               OnPageSizeChanged="OnPageSizeChanged" />
 }
 
 @code {
     bool _loading = true;
     string? _error;
-
     List<ProgramRecord> _items = new();
     int _total;
-
     int _pageSize = 25;
     int _pageIndex = 1;
     string _search = "";
-
     System.Timers.Timer? _debounce;
 
     protected override async Task OnInitializedAsync() => await Load();
