@@ -30,5 +30,6 @@ app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
 app.MapProgramsEndpoints();
 app.MapSummaryEndpoints();
+app.MapExportEndpoints();
 
 app.Run();
