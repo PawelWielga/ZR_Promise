@@ -8,7 +8,7 @@ namespace AppAudit.Application.Programs.Commands;
 public sealed class UpsertProgramCommandHandler(IAppDbContext db, IClock clock)
     : IRequestHandler<UpsertProgramCommand>
 {
-    public async Task<Unit> Handle(UpsertProgramCommand request, CancellationToken ct)
+    public async Task Handle(UpsertProgramCommand request, CancellationToken ct)
     {
         var dto = request.Program;
         var exists = await db.Programs.AnyAsync(x => x.ProgramId == dto.ProgramId, ct);
@@ -29,11 +29,5 @@ public sealed class UpsertProgramCommandHandler(IAppDbContext db, IClock clock)
 
             await db.SaveChangesAsync(ct);
         }
-        return Unit.Value;
-    }
-
-    Task IRequestHandler<UpsertProgramCommand>.Handle(UpsertProgramCommand request, CancellationToken cancellationToken)
-    {
-        return Handle(request, cancellationToken);
     }
 }

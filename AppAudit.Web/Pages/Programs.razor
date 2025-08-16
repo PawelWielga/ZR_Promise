@@ -95,8 +95,15 @@ else
             _items = res.Items.ToList();
             _total = res.Total;
         }
-        catch (Exception ex) { _error = ex.Message; }
-        finally { _loading = false; StateHasChanged(); }
+        catch (Exception ex) 
+        { 
+            _error = ex.Message;
+        }
+        finally 
+        {
+            _loading = false;
+            StateHasChanged();
+        }
     }
 
     async Task Toggle(Guid id, bool requires)
@@ -104,8 +111,13 @@ else
         try
         {
             await Mediator.Send(new SetRequiresLicenseCommand(id, requires));
+
             var idx = _items.FindIndex(x => x.ProgramId == id);
-            if (idx >= 0) _items[idx] = _items[idx] with { RequiresLicense = requires };
+            if (idx >= 0)
+            { 
+                _items[idx] = _items[idx] with { RequiresLicense = requires };
+            }
+
             StateHasChanged();
         }
         catch (Exception ex) { _error = ex.Message; }
@@ -127,9 +139,17 @@ else
     void OnSearchInput(ChangeEventArgs e)
     {
         _search = e.Value?.ToString() ?? "";
+
         _debounce?.Stop();
+
         _debounce ??= new System.Timers.Timer(400) { AutoReset = false };
-        _debounce.Elapsed += async (_, __) => await InvokeAsync(async () => { _pageIndex = 1; await Load(); });
+        _debounce.Elapsed += async (_, __) => 
+            await InvokeAsync(async () => 
+            {
+                _pageIndex = 1;
+                await Load(); 
+            });
+
         _debounce.Start();
     }
 

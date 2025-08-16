@@ -113,7 +113,12 @@ else
             if (_pageIndex > lastPage)
             {
                 _pageIndex = lastPage;
-                res = await Mediator.Send(new GetProgramsPageQuery(_pageIndex, _pageSize, search, null, true));
+                res = await Mediator.Send(new GetProgramsPageQuery(
+                    Page: _pageIndex, 
+                    PageSize: _pageSize, 
+                    Search: search, 
+                    HasKey: true
+                ));
             }
 
             _items = res.Items.ToList();

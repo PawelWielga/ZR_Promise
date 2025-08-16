@@ -11,9 +11,18 @@ public sealed class GetSummaryQueryHandler(IAppDbContext db)
 {
     public async Task<SummaryDto> Handle(GetSummaryQuery request, CancellationToken ct)
     {
-        var total = await db.Programs.CountAsync(ct);
-        var requiring = await db.Programs.CountAsync(p => p.RequiresLicense, ct);
-        var withoutKey = await db.Programs.CountAsync(p => p.RequiresLicense && (p.LicenseKey == null || p.LicenseKey == ""), ct);
-        return new SummaryDto(total, requiring, withoutKey);
+        var result = await db.Programs
+            .GroupBy(_ => 1)
+            .Select(g => new
+            {
+                Total = g.Count(),
+                Requiring = g.Count(p => p.RequiresLicense),
+                WithoutKey = g.Count(p => p.RequiresLicense && (p.LicenseKey == null || p.LicenseKey == ""))
+            })
+            .SingleOrDefaultAsync(ct);
+
+        return result is null
+            ? new SummaryDto(0, 0, 0)
+            : new SummaryDto(result.Total, result.Requiring, result.WithoutKey);
     }
 }

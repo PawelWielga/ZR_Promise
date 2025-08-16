@@ -1,7 +1,9 @@
 ﻿using AppAudit.Collector;
 using AppAudit.Contracts;
 using Microsoft.Win32;
+using System.Runtime.Versioning;
 
+[SupportedOSPlatform("windows")]
 internal class Program
 {
     static async Task<int> Main(string[] args)
@@ -30,7 +32,6 @@ internal class Program
 
                 foreach (var g in groups)
                 {
-                    // Wybierz najlepszy wpis z grupy
                     var best = g
                         .OrderByDescending(p => !string.IsNullOrWhiteSpace(p.UninstallString))
                         .ThenByDescending(p => !string.IsNullOrWhiteSpace(p.InstallLocation))
@@ -54,7 +55,7 @@ internal class Program
                     sent++;
                 }
 
-                Console.WriteLine($"[Collector] {now:yyyy-MM-dd HH:mm:ss} wysłano (po filtrach/dedupe): {sent}");
+                Console.WriteLine($"[Collector] {now:yyyy-MM-dd HH:mm:ss} wysłano: {sent}");
             }
             catch (Exception ex)
             {

@@ -1,4 +1,4 @@
-﻿namespace AppAudit.Contracts;
+namespace AppAudit.Contracts;
 
 public sealed record ProgramRecord(
     Guid ProgramId,
@@ -8,4 +8,4 @@ public sealed record ProgramRecord(
     DateTimeOffset DiscoveredAt,
     bool RequiresLicense,
     string? LicenseKey
-);
+) : IProgramInfo;

@@ -1,11 +1,15 @@
 ﻿using Microsoft.Win32;
+using System.Runtime.Versioning;
 
+namespace AppAudit.Collector;
+
+[SupportedOSPlatform("windows")]
 public static class RegistryScanner
 {
     static readonly string[] SubKeys =
     [
         @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
-        @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
+    @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
     ];
 
     public static IEnumerable<InstalledProgram> Scan()

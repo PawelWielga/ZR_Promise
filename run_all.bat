@@ -69,4 +69,8 @@ start "AppAudit.COLLECTOR" cmd /k ^
   chcp 65001^>NUL ^& dotnet run --project "%COLLECTOR_PROJ%" --no-build -c Debug -- --api "%API_URL%" --minutes 5
 
 echo [OK] Wszystko odpalone w osobnych oknach.
+rem === ZATRZYMAJ GŁÓWNE OKNO ===
+echo.
+echo Nacisnij dowolny klawisz, aby zamknąć to okno...
+pause >nul
 endlocal

@@ -3,21 +3,13 @@ using MediatR;
 
 namespace AppAudit.Web.CQRS.Handlers;
 
-public sealed class SetLicenseKeyCommandHandler(IHttpClientFactory httpFactory)
+public sealed class SetLicenseKeyCommandHandler(WebApiClient apiClient)
     : IRequestHandler<SetLicenseKeyCommand>
 {
-    public async Task<Unit> Handle(SetLicenseKeyCommand request, CancellationToken ct)
+    public async Task Handle(SetLicenseKeyCommand request, CancellationToken ct)
     {
-        var http = httpFactory.CreateClient("Api");
         var key = request.LicenseKey ?? string.Empty;
         var url = $"/api/programs/{request.ProgramId:D}/license-key?key={Uri.EscapeDataString(key)}";
-        using var resp = await http.PutAsync(url, content: null, ct);
-        resp.EnsureSuccessStatusCode();
-        return Unit.Value;
-    }
-
-    Task IRequestHandler<SetLicenseKeyCommand>.Handle(SetLicenseKeyCommand request, CancellationToken cancellationToken)
-    {
-        return Handle(request, cancellationToken);
+        await apiClient.PutAsync(url, ct);
     }
 }
