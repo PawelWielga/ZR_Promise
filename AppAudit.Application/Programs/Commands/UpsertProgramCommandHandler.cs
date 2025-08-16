@@ -24,6 +24,7 @@ public sealed class UpsertProgramCommandHandler(IAppDbContext db)
                 RequiresLicense = dto.RequiresLicense,
                 LicenseKey = dto.LicenseKey
             }, ct);
+
             await db.SaveChangesAsync(ct);
         }
         return Unit.Value;

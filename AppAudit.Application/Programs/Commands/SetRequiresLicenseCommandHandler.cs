@@ -11,6 +11,10 @@ public sealed class SetRequiresLicenseCommandHandler(IAppDbContext db)
     {
         var p = await db.FindProgramAsync(request.ProgramId, ct);
         if (p is null) return Unit.Value;
+
+        if (!request.Requires && !string.IsNullOrWhiteSpace(p.LicenseKey))
+            return Unit.Value;
+
         p.RequiresLicense = request.Requires;
         await db.SaveChangesAsync(ct);
         return Unit.Value;

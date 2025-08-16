@@ -54,6 +54,8 @@ else
                             <input type="checkbox"
                                    class="h-4 w-4 accent-blue-600"
                                    checked="@p.RequiresLicense"
+                                   disabled="@(!string.IsNullOrWhiteSpace(p.LicenseKey))"
+                                   title="@(!string.IsNullOrWhiteSpace(p.LicenseKey) ? "Najpierw usuń klucz licencji." : null)"
                                    @onchange="async e => await Toggle(p.ProgramId, ((bool?)e.Value) ?? false)" />
                         </td>
                     </tr>

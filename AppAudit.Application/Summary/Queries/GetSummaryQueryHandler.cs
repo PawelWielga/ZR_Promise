@@ -4,7 +4,7 @@ using AppAudit.Contracts.Summary.Queries;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AppAudit.Application.Programs.Queries;
+namespace AppAudit.Application.Summary.Queries;
 
 public sealed class GetSummaryQueryHandler(IAppDbContext db)
     : IRequestHandler<GetSummaryQuery, SummaryDto>

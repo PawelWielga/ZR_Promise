@@ -1,6 +1,7 @@
 ﻿using AppAudit.Application.Abstractions;
 using AppAudit.Contracts.Programs.Commands;
 using MediatR;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace AppAudit.Application.Programs.Commands;
 
@@ -11,7 +12,13 @@ public sealed class SetLicenseKeyCommandHandler(IAppDbContext db)
     {
         var p = await db.FindProgramAsync(request.ProgramId, ct);
         if (p is null) return Unit.Value;
-        p.LicenseKey = string.IsNullOrWhiteSpace(request.LicenseKey) ? null : request.LicenseKey.Trim();
+
+        var key = string.IsNullOrWhiteSpace(request.LicenseKey) ? null : request.LicenseKey.Trim();
+        p.LicenseKey = key;
+
+        if (!string.IsNullOrWhiteSpace(key))
+            p.RequiresLicense = true;
+
         await db.SaveChangesAsync(ct);
         return Unit.Value;
     }
