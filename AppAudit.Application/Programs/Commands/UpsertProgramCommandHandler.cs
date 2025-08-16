@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AppAudit.Application.Programs.Commands;
 
-public sealed class UpsertProgramCommandHandler(IAppDbContext db)
+public sealed class UpsertProgramCommandHandler(IAppDbContext db, IClock clock)
     : IRequestHandler<UpsertProgramCommand>
 {
     public async Task<Unit> Handle(UpsertProgramCommand request, CancellationToken ct)
@@ -14,6 +14,8 @@ public sealed class UpsertProgramCommandHandler(IAppDbContext db)
         var exists = await db.Programs.AnyAsync(x => x.ProgramId == dto.ProgramId, ct);
         if (!exists)
         {
+            var discoveredAt = dto.DiscoveredAt == default ? clock.Now : dto.DiscoveredAt;
+
             await db.AddProgramAsync(new ProgramEntry
             {
                 ProgramId = dto.ProgramId,

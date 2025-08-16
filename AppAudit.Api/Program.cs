@@ -1,5 +1,6 @@
 using AppAudit.Api.Data;
 using AppAudit.Api.Endpoints;
+using AppAudit.Api.Infrastructure;
 using AppAudit.Application.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,7 @@ builder.Services.AddDbContext<AppDbContext>(o =>
     o.UseSqlite(builder.Configuration.GetConnectionString("Default") ?? "Data Source=appaudit.db"));
 
 builder.Services.AddScoped<IAppDbContext, AppDbAdapter>();
+builder.Services.AddSingleton<IClock, SystemClock>();
 
 builder.Services.AddMediatR(cfg =>
 {
