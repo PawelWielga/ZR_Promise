@@ -4,13 +4,12 @@ using MediatR;
 
 namespace AppAudit.Web.CQRS.Handlers;
 
-public sealed class GetProgramsQueryHandler(IHttpClientFactory httpFactory)
+public sealed class GetProgramsQueryHandler(WebApiClient apiClient)
     : IRequestHandler<GetProgramsQuery, IReadOnlyList<ProgramRecord>>
 {
     public async Task<IReadOnlyList<ProgramRecord>> Handle(GetProgramsQuery request, CancellationToken ct)
     {
-        var http = httpFactory.CreateClient("Api");
-        var data = await http.GetFromJsonAsync<IReadOnlyList<ProgramRecord>>("/api/programs", ct);
+        var data = await apiClient.GetAsync<IReadOnlyList<ProgramRecord>>("/api/programs", ct);
         return data ?? [];
     }
 }

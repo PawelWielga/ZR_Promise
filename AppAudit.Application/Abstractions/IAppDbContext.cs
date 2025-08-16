@@ -1,4 +1,6 @@
-﻿namespace AppAudit.Application.Abstractions;
+using AppAudit.Contracts;
+
+namespace AppAudit.Application.Abstractions;
 
 public interface IAppDbContext
 {
@@ -9,7 +11,7 @@ public interface IAppDbContext
     Task<int> SaveChangesAsync(CancellationToken ct);
 }
 
-public sealed class ProgramEntry
+public sealed class ProgramEntry : IProgramInfo
 {
     public Guid ProgramId { get; set; }
     public string Name { get; set; } = default!;

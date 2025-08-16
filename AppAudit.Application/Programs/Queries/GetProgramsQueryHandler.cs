@@ -13,6 +13,6 @@ public sealed class GetProgramsQueryHandler(IAppDbContext db)
     public async Task<IReadOnlyList<ProgramRecord>> Handle(GetProgramsQuery request, CancellationToken ct)
         => await db.Programs
             .OrderByDescending(p => p.DiscoveredAt)
-            .Select(ProgramMaps.ToRecord)
+            .Select(ProgramMappings.ToRecord)
             .ToListAsync(ct);
 }

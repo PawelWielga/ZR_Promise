@@ -1,16 +1,16 @@
+using AppAudit.Web;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// MediatR – rejestruj handlery z aktualnego assembly (Web)
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
 });
 
-// HttpClient do API (z konfiguracji)
 var apiBase = builder.Configuration["Api:BaseUrl"] ?? "http://localhost:5000";
 builder.Services.AddHttpClient("Api", client => client.BaseAddress = new Uri(apiBase));
+builder.Services.AddScoped<WebApiClient>();
 
-// Blazor
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 

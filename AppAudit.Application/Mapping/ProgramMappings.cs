@@ -1,17 +1,10 @@
-﻿using AppAudit.Contracts;
+using AppAudit.Contracts;
+using AppAudit.Application.Abstractions;
+using System.Linq.Expressions;
 
 namespace AppAudit.Application.Mapping;
 
-using Abstractions;
-using System.Linq.Expressions;
-
 public static class ProgramMappings
-{
-    public static ProgramRecord ToDto(this ProgramEntry e) =>
-        new(e.ProgramId, e.Name, e.Version, e.Publisher, e.DiscoveredAt, e.RequiresLicense, e.LicenseKey);
-}
-
-public static class ProgramMaps
 {
     public static readonly Expression<Func<ProgramEntry, ProgramRecord>> ToRecord =
         p => new ProgramRecord(
@@ -23,4 +16,9 @@ public static class ProgramMaps
             p.RequiresLicense,
             p.LicenseKey
         );
+
+    private static readonly Func<ProgramEntry, ProgramRecord> ToRecordFunc = ToRecord.Compile();
+
+    public static ProgramRecord ToDto(this ProgramEntry e) => ToRecordFunc(e);
 }
+
