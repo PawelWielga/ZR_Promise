@@ -17,10 +17,11 @@ public static class ProgramsEndpoints
             int page = 1,
             int pageSize = 25,
             string? search = null,
-            bool? requiresOnly = null
+            bool? requiresKey = null,
+            bool? hasKey = null
         ) =>
         {
-            var res = await mediator.Send(new GetProgramsPageQuery(page, pageSize, search, requiresOnly));
+            var res = await mediator.Send(new GetProgramsPageQuery(page, pageSize, search, requiresKey, hasKey));
             return Results.Ok(res);
         });
 

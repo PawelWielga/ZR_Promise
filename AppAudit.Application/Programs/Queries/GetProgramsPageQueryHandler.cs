@@ -20,8 +20,13 @@ public sealed class GetProgramsPageQueryHandler(IAppDbContext db)
             query = query.Where(p => p.Name.Contains(s) || (p.Publisher != null && p.Publisher.Contains(s)));
         }
 
-        if (r.RequiresOnly is true)
+        if (r.RequiresKey is true)
             query = query.Where(p => p.RequiresLicense);
+
+        if (r.HasKey is true)
+            query = query.Where(p => !string.IsNullOrWhiteSpace(p.LicenseKey));
+        else if (r.HasKey is false)
+            query = query.Where(p => string.IsNullOrWhiteSpace(p.LicenseKey));
 
         var total = await query.CountAsync(ct);
 

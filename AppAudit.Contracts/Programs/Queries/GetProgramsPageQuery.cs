@@ -7,5 +7,6 @@ public sealed record GetProgramsPageQuery(
     int Page = 1,
     int PageSize = 25,
     string? Search = null,
-    bool? RequiresOnly = null
+    bool? RequiresKey = null,
+    bool? HasKey = null
 ) : IRequest<PagedResult<ProgramRecord>>;

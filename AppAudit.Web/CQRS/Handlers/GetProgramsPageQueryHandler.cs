@@ -11,10 +11,14 @@ public sealed class GetProgramsPageQueryHandler(IHttpClientFactory httpFactory)
     public async Task<PagedResult<ProgramRecord>> Handle(GetProgramsPageQuery request, CancellationToken ct)
     {
         var http = httpFactory.CreateClient("Api");
+
         var url = $"/api/programs?page={request.Page}&pageSize={request.PageSize}"
                 + (string.IsNullOrWhiteSpace(request.Search) ? "" : $"&search={Uri.EscapeDataString(request.Search)}")
-                + (request.RequiresOnly is null ? "" : $"&requiresOnly={(request.RequiresOnly.Value ? "true" : "false")}");
+                + (request.RequiresKey is null ? "" : $"&requiresKey={(request.RequiresKey.Value ? "true" : "false")}")
+                + (request.HasKey is null ? "" : $"&hasKey={(request.HasKey.Value ? "true" : "false")}");
+
         var res = await http.GetFromJsonAsync<PagedResult<ProgramRecord>>(url, ct);
-        return res ?? new PagedResult<ProgramRecord>(Array.Empty<ProgramRecord>(), 0);
+
+        return res ?? new PagedResult<ProgramRecord>([], 0);
     }
 }
