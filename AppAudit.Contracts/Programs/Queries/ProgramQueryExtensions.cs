@@ -9,8 +9,10 @@ public static class ProgramQueryExtensions
     {
         if (!string.IsNullOrWhiteSpace(r.Search))
         {
-            var s = r.Search.Trim();
-            query = query.Where(p => p.Name.Contains(s) || (p.Publisher != null && p.Publisher.Contains(s)));
+            var s = r.Search.Trim().ToLower();
+            query = query.Where(p =>
+                p.Name.ToLower().Contains(s) ||
+                (p.Publisher != null && p.Publisher.ToLower().Contains(s)));
         }
 
         if (r.RequiresKey is true)
