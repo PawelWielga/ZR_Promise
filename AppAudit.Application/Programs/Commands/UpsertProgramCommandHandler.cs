@@ -22,7 +22,7 @@ public sealed class UpsertProgramCommandHandler(IAppDbContext db, IClock clock)
                 Name = dto.Name,
                 Version = dto.Version,
                 Publisher = dto.Publisher,
-                DiscoveredAt = dto.DiscoveredAt,
+                DiscoveredAt = discoveredAt,
                 RequiresLicense = dto.RequiresLicense,
                 LicenseKey = dto.LicenseKey
             }, ct);
